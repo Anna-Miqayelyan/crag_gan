@@ -1,0 +1,128 @@
+#include <iostream>
+#include <vector>
+#include <list>
+#include <string>
+
+class Graph {
+private:
+    const int rows = 7;
+    const int cols = 7;
+    std::string matrix[7][7]; // Adjacency matrix
+
+public:
+    // Constructor to initialize the graph matrix
+    Graph() {
+        matrix[0][0] = "0"; matrix[0][1] = "n1"; matrix[0][2] = "n2"; matrix[0][3] = "n3"; matrix[0][4] = "n4"; matrix[0][5] = "n5"; matrix[0][6] = "n6";
+        matrix[1][0] = "n1"; matrix[1][1] = "0"; matrix[1][2] = "10"; matrix[1][3] = "0"; matrix[1][4] = "0"; matrix[1][5] = "8"; matrix[1][6] = "5";
+        matrix[2][0] = "n2"; matrix[2][1] = "10"; matrix[2][2] = "0"; matrix[2][3] = "0"; matrix[2][4] = "20"; matrix[2][5] = "12"; matrix[2][6] = "0";
+        matrix[3][0] = "n3"; matrix[3][1] = "0"; matrix[3][2] = "0"; matrix[3][3] = "0"; matrix[3][4] = "4"; matrix[3][5] = "0"; matrix[3][6] = "0";
+        matrix[4][0] = "n4"; matrix[4][1] = "0"; matrix[4][2] = "20"; matrix[4][3] = "4"; matrix[4][4] = "0"; matrix[4][5] = "15"; matrix[4][6] = "0";
+        matrix[5][0] = "n5"; matrix[5][1] = "8"; matrix[5][2] = "12"; matrix[5][3] = "0"; matrix[5][4] = "15"; matrix[5][5] = "0"; matrix[5][6] = "7";
+        matrix[6][0] = "n6"; matrix[6][1] = "5"; matrix[6][2] = "0"; matrix[6][3] = "0"; matrix[6][4] = "0"; matrix[6][5] = "7"; matrix[6][6] = "0";
+    }
+
+    // Function to display the graph as an adjacency list
+    void printAdjList() {
+        const int numNodes = 6;
+        std::vector<char> nodeLabels = { 'A', 'B', 'C', 'D', 'E', 'F' };
+        std::vector<std::list<int>> adjList(numNodes);
+
+        adjList[0] = { 1, 2 };       // A -> B, C
+        adjList[1] = { 0, 2, 3, 5 }; // B -> A, C, D, F
+        adjList[2] = { 0, 1 };       // C -> A, B
+        adjList[3] = { 1, 4, 5 };    // D -> B, E, F
+        adjList[4] = { 3 };          // E -> D
+        adjList[5] = { 1, 3 };       // F -> B, D
+
+        std::cout << "\nAdjacency List Representation:\n";
+        for (int i = 0; i < numNodes; i++) {
+            std::cout << nodeLabels[i] << " -> ";
+            for (int neighbor : adjList[i]) {
+                std::cout << nodeLabels[neighbor] << " ";
+            }
+            std::cout << "\n";
+        }
+    }
+
+    // Function to display the graph as an adjacency matrix
+    void printAdjMatrix() {
+        std::cout << "\nAdjacency Matrix Representation:\n";
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                std::cout << matrix[i][j] << "\t";
+            }
+            std::cout << "\n";
+        }
+    }
+
+    // Function to determine and print node labels and the distance between specific nodes
+    void determineAndPrintNodes() {
+        int E = -1, D = -1, B = -1, F = -1, A = -1, C = -1;
+
+        // Find node E (with exactly 1 connection)
+        for (int i = 1; i < rows; i++) {
+            int connections = 0;
+            for (int j = 1; j < cols; j++) {
+                if (matrix[i][j] != "0") connections++;
+            }
+            if (connections == 1) { E = i; break; }
+        }
+
+        // Find node D (connected to E)
+        for (int j = 1; j < cols; j++) {
+            if (matrix[E][j] != "0") { D = j; break; }
+        }
+
+        // Find node B (with exactly 4 connections)
+        for (int i = 1; i < rows; i++) {
+            int connections = 0;
+            for (int j = 1; j < cols; j++) {
+                if (matrix[i][j] != "0") connections++;
+            }
+            if (connections == 4) { B = i; break; }
+        }
+
+        // Find node F (connected to D but not E or B)
+        for (int j = 1; j < cols; j++) {
+            if (matrix[D][j] != "0" && j != E && j != B) { F = j; break; }
+        }
+
+        // Find node A (with exactly 2 connections)
+        for (int i = 1; i < rows; i++) {
+            int connections = 0;
+            for (int j = 1; j < cols; j++) {
+                if (matrix[i][j] != "0") connections++;
+            }
+            if (connections == 2) { A = i; break; }
+        }
+
+        // Find node C (the remaining node)
+        for (int i = 1; i < rows; i++) {
+            if (i != E && i != D && i != B && i != F && i != A) { C = i; break; }
+        }
+
+        // Print the determined node labels
+        std::cout << "\nNode A = " << matrix[A][0] << "\n";
+        std::cout << "Node B = " << matrix[B][0] << "\n";
+        std::cout << "Node C = " << matrix[C][0] << "\n";
+        std::cout << "Node D = " << matrix[D][0] << "\n";
+        std::cout << "Node E = " << matrix[E][0] << "\n";
+        std::cout << "Node F = " << matrix[F][0] << "\n";
+
+        // Print the distance between B and C
+        std::string distance = matrix[B][C];
+        std::cout << "\nDistance between B and C: " << distance << "\n";
+    }
+};
+
+int main() {
+    // Create a Graph object
+    Graph graph;
+
+    // Print the adjacency list and matrix, and determine the nodes
+    graph.printAdjList();
+    graph.printAdjMatrix();
+    graph.determineAndPrintNodes();
+
+    return 0;
+}
