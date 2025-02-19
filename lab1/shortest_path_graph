@@ -1,0 +1,94 @@
+#include <iostream>
+using namespace std;
+
+#define kogh 11
+#define gagat 8
+
+class Graph {
+private:
+    int graph[100][100];
+    int pathMat[gagat][gagat]; 
+
+public:
+    Graph() {
+        int tempGraph[kogh][3] = {
+            {1, 2, 3}, {1, 3, 2}, {3, 2, 4}, {3, 4, 5}, {3, 5, 6},
+            {4, 6, 1}, {5, 7, 2}, {5, 8, 10}, {6, 5, 7}, {6, 8, 4}, {7, 8, 9}
+        };
+        for (int i = 0; i < kogh; i++) {
+            for (int j = 0; j < 3; j++) {
+                graph[i][j] = tempGraph[i][j];
+            }
+        }
+
+        for (int i = 0; i < gagat; i++) {
+            for (int j = 0; j < gagat; j++) {
+                pathMat[i][j] = 0;
+            }
+        }
+    }
+
+    void buildPathMatrix() {
+        for (int i = 0; i < kogh; i++) {
+            int x = graph[i][0];
+            int y = graph[i][1];
+            int distance = graph[i][2];
+            pathMat[y - 1][x - 1] = distance;
+        }
+
+        for (int i = 0; i < gagat; i++) {
+            for (int j = 0; j < gagat; j++) {
+                cout << pathMat[i][j] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
+
+    void findShortestPath() {
+        int pathVec[1000];
+        int min = 1000;
+        int mincol, row = gagat - 1, k = 0;
+
+        while (row != 0) {
+            for (int col = 0; col < gagat; col++) {
+                if (pathMat[row][col] < min && pathMat[row][col] != 0) {
+                    min = pathMat[row][col];
+                    mincol = col;
+                }
+            }
+            pathVec[k] = row + 1;
+            row = mincol;
+            k++;
+            if (mincol == 0) break;
+            min = 1000;
+        }
+
+        cout << "The shortest path is: \n";
+        for (int i = 0; i < k; i++) {
+            cout << pathVec[i] << " ---> ";
+        }
+        cout << " 1" << endl;
+    }
+
+    void printGraph() {
+        for (int i = 0; i < kogh; i++) {
+            for (int j = 0; j < 3; j++) {
+                cout << graph[i][j] << " ";
+            }
+            cout << endl;
+        }
+    }
+};
+
+int main() {
+    Graph g; 
+
+    g.buildPathMatrix();
+    g.findShortestPath();
+
+    cout << endl;
+    g.printGraph();
+
+    return 0;
+}
