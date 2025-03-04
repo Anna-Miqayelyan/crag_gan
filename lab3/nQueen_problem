@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// Function to check if it's safe to place a queen at (row, col)
+bool isSafe(int row, int col, const vector<int>& board) {
+    for (int i = 0; i < row; ++i) {
+        // Check if queens are in the same column or on the same diagonal
+        if (board[i] == col || abs(board[i] - col) == abs(i - row)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Function to solve the N-Queens problem using backtracking
+void solveNQueens(int n, int row, vector<int>& board, vector<vector<string>>& solutions)
+{
+    if (row == n)
+    {
+        // If all queens are placed, save the solution
+        vector<string> solution(n, string(n, '.'));
+        for (int i = 0; i < n; ++i)
+        {
+            solution[i][board[i]] = 'Q'; // Place the queen
+        }
+        solutions.push_back(solution);
+        return;
+    }
+
+    // Try placing a queen in each column of the current row
+    for (int col = 0; col < n; ++col)
+    
+   {
+        if (isSafe(row, col, board))
+        {
+            board[row] = col; // Place queen
+            solveNQueens(n, row + 1, board, solutions); // Recurse for the next row
+        }
+    }
+}
+
+// Wrapper function to start solving from the first row
+vector<vector<string>> solveNQueens(int n) {
+    vector<vector<string>> solutions;
+    vector<int> board(n, -1); // -1 means no queen is placed yet
+    solveNQueens(n, 0, board, solutions);
+    return solutions;
+}
+
+// Function to print the solutions
+void printSolutions(const vector<vector<string>>& solutions) {
+    for (const auto& solution : solutions) {
+        for (const auto& row : solution) {
+            cout << row << endl; // Print each row of the board
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of queens: ";
+    cin >> n;
+
+    // Get all possible solutions
+    vector<vector<string>> solutions = solveNQueens(n);
+
+    // Print all solutions
+    printSolutions(solutions);
+
+    cout << "Total solutions: " << solutions.size() << endl;
+    return 0;
+}
