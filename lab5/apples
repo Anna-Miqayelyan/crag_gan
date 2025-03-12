@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+class Solution {
+public:
+    // The main function that calculates the minimum time to collect all apples.
+    int minTime(int n, vector<vector<int>>& edges, vector<bool>& hasApple) 
+    {
+        vector<bool> visited(n, false);          // Keep track of visited nodes
+        vector<vector<int>> graph(n);            // Adjacency list representation of the graph
+
+        // Building the undirected graph
+        for (auto& edge : edges) {
+            int u = edge[0], v = edge[1];
+            graph[u].push_back(v);
+            graph[v].push_back(u);
+        }
+
+        // Start DFS from the node 0 (root) with an initial cost of 0
+        return dfs(0, 0, graph, hasApple, visited);
+    }
+
+private:
+    // Depth-first search function to navigate the tree and calculate the cost.
+    int dfs(int node, int cost, vector<vector<int>>& graph, 
+            vector<bool>& hasApple, vector<bool>& visited) {
+
+        // If the node is already visited, skip it to prevent cycles
+        if (visited[node]) return 0;
+        visited[node] = true;    // Mark the current node as visited
+      
+        int totalCost = 0;       // Total cost to collect apples from child nodes
+
+        // Explore all adjacent nodes (children)
+        for (int& child : graph[node]) {
+            // Add to the total cost the cost of collecting apples from the child subtree
+            totalCost += dfs(child, 2, graph, hasApple, visited);
+        }
+
+        // If the node does not have an apple and there is no cost incurred from its children,
+        // it means we don't need to collect apples from this path, hence return 0.
+        if (!hasApple[node] && totalCost == 0) return 0;
+
+        // Otherwise, return the cost of the current path plus the totalCost from children.
+        return cost + totalCost;
+    }
+};
+
+int main() {
+    Solution sol;
+    
+    // Test case: A tree with 7 nodes
+    int n = 7;
+    vector<vector<int>> edges = {{0, 1}, {0, 2}, {1, 4}, {1, 5}, {2, 3}, {2, 6}};
+    vector<bool> hasApple = {false, false, true, false, true, true, false};
+    
+    // Calculate the minimum time to collect all apples
+    cout << "Minimum time to collect all apples: " << sol.minTime(n, edges, hasApple) << " seconds" << endl;
+    
+    return 0;
+}
